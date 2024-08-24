@@ -8,6 +8,7 @@ import {
   RapierRigidBody,
   type RigidBodyProps,
   CylinderCollider,
+  interactionGroups,
 } from "@react-three/rapier";
 import { useEffect, useRef, useMemo, useState, type ReactNode, forwardRef, type ForwardRefRenderFunction, type RefObject } from "react";
 import * as THREE from "three";
@@ -15,10 +16,10 @@ import { useControls } from "leva";
 import { useFollowCam } from "./hooks/useFollowCam";
 import { useGame } from "./stores/useGame";
 import { useJoystickControls } from "./stores/useJoystickControls";
-import type {
+import {
   Collider,
-  RayColliderHit,
-  Vector,
+  type RayColliderHit,
+  type Vector,
 } from "@dimforge/rapier3d-compat";
 import React from "react";
 
@@ -74,7 +75,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   // Follow light setups
   followLightPos = { x: 20, y: 30, z: 10 },
   // Base control setups
-  maxVelLimit = 2.5,
+  maxVelLimit = 7.0,
   turnVelMultiplier = 0.2,
   turnSpeed = 15,
   sprintMult = 2,
@@ -395,7 +396,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       "AutoBalance Force",
       {
         autoBalance: {
-          value: true,
+          value: false,
         },
         autoBalanceSpringK: {
           value: autoBalanceSpringK,
@@ -406,7 +407,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
         autoBalanceDampingC: {
           value: autoBalanceDampingC,
           min: 0,
-          max: 0.1,
+          max: 5.0,
           step: 0.001,
         },
         autoBalanceSpringOnY: {
@@ -576,6 +577,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   const dragAngForce: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const wantToMoveVel: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
   const rejectVel: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+  const floTestVec: THREE.Vector3 = useMemo(() => new THREE.Vector3(), []);
+
 
   /**
    * Floating Ray setup
@@ -801,6 +804,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       autoBalanceSpringK * (bodyBalanceVecOnZ.angleTo(vectorY))
       - characterRef.current.angvel().z * autoBalanceDampingC,
     );
+
+    
 
     // Apply balance torque impulse
     characterRef.current.applyTorqueImpulse(dragAngForce, true)
@@ -1135,8 +1140,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       characterRef.current,
       // this exclude any collider with userData: excludeEcctrlRay
       ((collider: Collider) => (
-        collider.parent().userData && !(collider.parent().userData as userDataType).excludeEcctrlRay
-      ))
+        (collider.parent().userData && !(collider.parent().userData as userDataType).excludeEcctrlRay)
+      )),
     );
 
     /**Test shape ray */
@@ -1164,6 +1169,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
      * Ray detect if on rigid body or dynamic platform, then apply the linear velocity and angular velocity to character
      */
     if (rayHit && canJump) {
+
       if (rayHit.collider.parent()) {
         // Getting the standing force apply point
         standingForcePoint.set(
@@ -1313,6 +1319,8 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
           false
         );
 
+        console.log
+
         // Apply opposite force to standing object (gravity g in rapier is 0.11 ?_?)
         characterMassForce.set(0, floatingForce > 0 ? -floatingForce : 0, 0);
         rayHit.collider
@@ -1448,6 +1456,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
 
   return (
     <RigidBody
+      name="player RigidBody"
       colliders={false}
       ref={characterRef}
       position={props.position || [0, 5, 0]}
@@ -1460,6 +1469,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       <CapsuleCollider
         name="character-capsule-collider"
         args={[capsuleHalfHeight, capsuleRadius]}
+        collisionGroups={interactionGroups(0, [0, 1, 2])}
       />
       {/* Body collide sensor (only for point to move mode) */}
       {isModePointToMove &&

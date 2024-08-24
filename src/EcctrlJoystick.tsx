@@ -100,6 +100,7 @@ const JoystickComponents = (props: EcctrlJoystickProps) => {
     // Reset window size function
     const onWindowResize = () => {
         setWindowSize({ innerHeight: window.innerHeight, innerWidth: window.innerWidth })
+        console.log('window resize')
     }
 
     useEffect(() => {
@@ -124,6 +125,8 @@ const JoystickComponents = (props: EcctrlJoystickProps) => {
             window.visualViewport.removeEventListener("resize", onWindowResize)
         }
     })
+
+
 
     return (
         <Suspense fallback="null">

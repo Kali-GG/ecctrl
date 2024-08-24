@@ -9,11 +9,11 @@ import { useControls } from "leva";
 import { Suspense, useEffect, useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 import { useGame } from "../src/stores/useGame";
-import { BallCollider, CylinderCollider, RapierCollider, vec3, interactionGroups } from "@react-three/rapier";
+import { BallCollider, RapierCollider, vec3 } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 
-export default function CharacterModel(props: CharacterModelProps) {
+export default function EnemyModel(props: CharacterModelProps) {
   // Change the character src to yours
   const group = useRef<THREE.Group>();
   const { nodes, animations } = useGLTF("/Floating Character.glb") as GLTF & {
@@ -40,7 +40,6 @@ export default function CharacterModel(props: CharacterModelProps) {
   let rightHand: THREE.Object3D = null;
   let leftHand: THREE.Object3D = null;
   let mugModel: THREE.Object3D = null;
-  const weaponColliderRef = useRef<RapierCollider>();
 
   /**
    * Prepare punch effect sprite
@@ -219,13 +218,12 @@ export default function CharacterModel(props: CharacterModelProps) {
 
       {/* Replace yours model here */}
       {/* Head collider */}
-      <BallCollider args={[0.5]} position={[0, 0.45, 0]} name="player" collisionGroups={interactionGroups(0, [1,2])}/>
+      <BallCollider args={[0.5]} position={[10, 0.45, 0]} />
       {/* Right hand collider */}
       <mesh ref={rightHandRef} />
       <BallCollider
         args={[0.1]}
         ref={rightHandColliderRef}
-        collisionGroups={interactionGroups(0, [1])}
         onCollisionEnter={(e) => {
           if (curAnimation === animationSet.action4) {
             // Play punch effect
@@ -240,7 +238,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
       {/* Left hand collider */}
       <mesh ref={leftHandRef} />
-      {/*<BallCollider args={[0.1]} ref={leftHandColliderRef} />*/}
+      <BallCollider args={[0.1]} ref={leftHandColliderRef} />
       {/* Character model */}
       <group
         ref={group}
@@ -292,21 +290,6 @@ export default function CharacterModel(props: CharacterModelProps) {
           textureImageURL={"./punchEffect.png"}
         />
       </group>
-
-      {/* Flos weapon code */}
-
-      <CylinderCollider 
-        name="weapon sensor"
-        sensor
-        args={[0.1, 0.01]}
-        position={[0,0,0]}
-
-        collisionGroups={interactionGroups([3], [1])}
-        onIntersectionEnter={({ target, other }) => {
-          if (other.rigidBodyObject) {console.log("Weapon test: ", target.rigidBodyObject?.name," interacted with ",other.colliderObject?.name);}
-        }}
-        />
-
     </Suspense>
   );
 }
