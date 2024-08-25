@@ -18,6 +18,7 @@ import EnemyModel from "./EnemyModel";
 import EnemyModelBasic from "./EnemyModelBasic";
 import EnemyTargetDummy from "./EnemyTargetDummy";
 import SimpleModel from "./simpleModel";
+import Projectiles from "./Projectiles";
 
 export default function Experience() {
   /**
@@ -80,26 +81,27 @@ export default function Experience() {
             followLight
             springK={2}
             dampingC={0.2}
-            autoBalance={false}
+            autoBalance={true}
             autoBalanceSpringK={1.2}
             autoBalanceDampingC={0.04}
             autoBalanceSpringOnY={0.7}
             autoBalanceDampingOnY={0.05}
             disableFollowCam={disableFollowCam}
-            camInitDis={-15}
-            camTargetPos={{ x: 0, y: 5, z: -3 }}
-            camInitDir={{ x: 0.5, y: 0}}
+            camInitDis={-20}
+            //camTargetPos={{ x: 0, y: 5, z: -3 }}
+            camInitDir={{ x: 0.7, y: 0}}
           >
             {/* Replace your model here */}
             <CharacterModel />
           </Ecctrl>
         </KeyboardControls>
 
-        {/* Enemies */}
-        <EnemyModelBasic />
-
+        {/* Flo: Enemies */}
         <SimpleModel scale={0.8} position={[10, -0.5, 0]}/>
         <SimpleModel scale={0.8} position={[8, -0.5, 0]}/>
+
+        {/* Flo: Projectiles */}
+        <Projectiles />
 
         {/* Rough plan */}
         <RoughPlane />
@@ -124,6 +126,7 @@ export default function Experience() {
 
         {/* Shoting cubes */}
         <ShotCube />
+      
       </Physics >
     </>
   );

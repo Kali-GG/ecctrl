@@ -12,6 +12,7 @@ import { useGame } from "../src/stores/useGame";
 import { BallCollider, CylinderCollider, RapierCollider, vec3, interactionGroups } from "@react-three/rapier";
 import { useFrame } from "@react-three/fiber";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+import Weapon from "./Weapon";
 
 export default function CharacterModel(props: CharacterModelProps) {
   // Change the character src to yours
@@ -295,17 +296,7 @@ export default function CharacterModel(props: CharacterModelProps) {
 
       {/* Flos weapon code */}
 
-      <CylinderCollider 
-        name="weapon sensor"
-        sensor
-        args={[0.1, 0.01]}
-        position={[0,0,0]}
-
-        collisionGroups={interactionGroups([3], [1])}
-        onIntersectionEnter={({ target, other }) => {
-          if (other.rigidBodyObject) {console.log("Weapon test: ", target.rigidBodyObject?.name," interacted with ",other.colliderObject?.name);}
-        }}
-        />
+      <Weapon />
 
     </Suspense>
   );

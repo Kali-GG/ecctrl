@@ -25,44 +25,38 @@ export default function SimpleModel(props) {
    * Prepare replacing materials
    */
   const outlineMaterial = new THREE.MeshBasicMaterial({
-	color: "black",
-	transparent: true,
+    color: "black",
+    transparent: true,
   });
 
   const meshToonMaterial = new THREE.MeshToonMaterial({
-	color: "red",
-	gradientMap: gradientMapTexture,
-	transparent: true,
-  })
+    color: "red",
+    gradientMap: gradientMapTexture,
+    transparent: true,
+  });
 
   //physics
-  const { rapier, world } = useRapier();
   const rigidbodyRef = useRef<any>();
 
   useEffect(() => {
-	rigidbodyRef.current.lockRotations(true);
-	rigidbodyRef.current.setEnabledRotations(false, true, false);
+    rigidbodyRef.current.lockRotations(true);
+    rigidbodyRef.current.setEnabledRotations(false, true, false);
   }, []);
 
 
   return (
-	<RigidBody
-  name="Target Practice Dummy"
-	mass={1}
-	ref={rigidbodyRef}
-  colliders="hull"
-  collisionGroups={interactionGroups([1], [0, 1, 2, 3])}
-  onCollisionEnter={({ manifold, target, other }) => {
-    //console.log("Collision at world position ", manifold.solverContactPoint(0));
-    if (other.rigidBodyObject) {console.log(target.rigidBodyObject?.name," collided with ",other.colliderObject?.name);}
-  }}
+    <RigidBody
+      name="Target Practice Dummy"
+      mass={10}
+      ref={rigidbodyRef}
+      colliders="hull"
+      collisionGroups={interactionGroups([1], [0, 1, 2, 3])}
   	>
 
 			<group ref={groupRef} {...props} dispose={null}>
-			<mesh castShadow receiveShadow geometry={nodes.PrototypePete.geometry} material={meshToonMaterial} />
-			<mesh  geometry={nodes.outline.geometry} material={outlineMaterial} />
+        <mesh castShadow receiveShadow geometry={nodes.PrototypePete.geometry} material={meshToonMaterial} />
+        <mesh  geometry={nodes.outline.geometry} material={outlineMaterial} />
 			</group>
-
 	</RigidBody>
   )
 }
