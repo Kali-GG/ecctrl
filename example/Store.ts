@@ -1,23 +1,36 @@
 import { create } from 'zustand';
-import Projectiles, { type ProjectileData } from './Projectiles';
+import { type ProjectileData } from './Projectiles';
+import { type EnemyData } from './Enemies';
 
-interface GameState {
-	projectiles: ProjectileData[],
-	spawnProjectile: (data: ProjectileData) => void,
-	setProjectileActive: (id: number, active: boolean) => void
+interface ProjectilesState {
+	list: ProjectileData[],
+	spawn: (data: ProjectileData) => void,
+	setActive: (id: number, active: boolean) => void
 }
 
-const useGameStore = create<GameState>() ((set, get) => ({
-	projectiles: [],
-	spawnProjectile: (data: ProjectileData) => { 
-		//console.log("should spawn a projectile with zustand");
-		set((state) => ({ projectiles: [...state.projectiles, data] }));
+const useStoreProjectiles = create<ProjectilesState>() ((set, get) => ({
+	list: [],
+	spawn: (data: ProjectileData) => { 
+		set((state) => ({ list: [...state.list, data] }));
 	},
-	setProjectileActive: (id: number, active: boolean) => {
-		const nextProjectiles = get().projectiles;
+	setActive: (id: number, active: boolean) => {
+		const nextProjectiles = get().list;
 		nextProjectiles[id].active = active;
-		set((state) => ({ projectiles: [...state.projectiles] }));
+		set((state) => ({ list: [...state.list] }));
 	}
 }));
 
-export { useGameStore }
+interface EnemiesState {
+	list: EnemyData[],
+	spawn: (data: EnemyData) => void,
+}
+
+const useStoreEnemies = create<EnemiesState>() ((set, get) => ({
+	list: [],
+	spawn: (data: EnemyData) => {
+		set( (state) => ({ list: [...state.list, data] }));
+	},
+}));
+
+
+export { useStoreProjectiles, useStoreEnemies }

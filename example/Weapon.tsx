@@ -1,11 +1,11 @@
 import { CylinderCollider, interactionGroups } from "@react-three/rapier";
 import {CollissionGroup} from "./CollisionGroups"
-import { useGameStore } from "./Store";
+import { useStoreProjectiles } from "./Store";
 
 
 export default function Weapon() {
 
-	const spawnProjectile = useGameStore((state) => state.spawnProjectile);
+	const spawnProjectile = useStoreProjectiles((state) => state.spawn);
 
 	return(
 		<CylinderCollider 

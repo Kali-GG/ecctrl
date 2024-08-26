@@ -1,12 +1,12 @@
 import { BallCollider, interactionGroups, RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { useGameStore } from "./Store"
+import { useStoreProjectiles } from "./Store"
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { CollissionGroup as CG } from "./CollisionGroups";
 
 
 export default function Projectiles() {
-	const projectiles = useGameStore((state) => state.projectiles);
+	const projectiles = useStoreProjectiles((state) => state.list);
 	return projectiles.map((data, i) => <Projectile key={i} data={data} id={i}/> );
 }
 
@@ -17,7 +17,7 @@ interface ProjectileData {
 }
 
 function Projectile(props: {data: ProjectileData, id: number}) {
-	const setProjectileActive = useGameStore((state) => state.setProjectileActive);
+	const setProjectileActive = useStoreProjectiles((state) => state.setActive);
 	const ref = useRef<RapierRigidBody>();
 	const originPos: THREE.Vector3 = useMemo(() => props.data.pos, []);
 
@@ -50,8 +50,9 @@ function Projectile(props: {data: ProjectileData, id: number}) {
 			//collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
 			position={originPos}
 		>
-			<BallCollider 
+			<BallCollider
 				sensor
+				name = "projectile"
 				args={[0.5]} 
 				collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
 				onIntersectionEnter={({ target, other }) => {

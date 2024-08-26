@@ -19,6 +19,7 @@ import EnemyModelBasic from "./EnemyModelBasic";
 import EnemyTargetDummy from "./EnemyTargetDummy";
 import SimpleModel from "./SimpleModel";
 import Projectiles from "./Projectiles";
+import Enemies from "./Enemies";
 
 export default function Experience() {
   /**
@@ -98,6 +99,7 @@ export default function Experience() {
 
         {/* Flo: Enemies */}
         
+        <Enemies />
         <SimpleModel scale={0.8} customPosition={[8, 0, 0]}/>
 
         {/* Flo: Projectiles */}
