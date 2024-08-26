@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import EnemyModel from "./EnemyModel";
 import EnemyModelBasic from "./EnemyModelBasic";
 import EnemyTargetDummy from "./EnemyTargetDummy";
-import SimpleModel from "./simpleModel";
+import SimpleModel from "./SimpleModel";
 import Projectiles from "./Projectiles";
 
 export default function Experience() {
@@ -97,8 +97,8 @@ export default function Experience() {
         </KeyboardControls>
 
         {/* Flo: Enemies */}
-        <SimpleModel scale={0.8} position={[10, -0.5, 0]}/>
-        <SimpleModel scale={0.8} position={[8, -0.5, 0]}/>
+        
+        <SimpleModel scale={0.8} customPosition={[8, 0, 0]}/>
 
         {/* Flo: Projectiles */}
         <Projectiles />

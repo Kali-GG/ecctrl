@@ -1,49 +1,65 @@
-import { interactionGroups, RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { BallCollider, interactionGroups, RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { useGameStore } from "./Store"
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { CollissionGroup } from "./CollisionGroups";
+import { CollissionGroup as CG } from "./CollisionGroups";
 
 
 export default function Projectiles() {
 	const projectiles = useGameStore((state) => state.projectiles);
-	return projectiles.map((data, i) => <Projectile key={i} data={data}/>);
+	return projectiles.map((data, i) => <Projectile key={i} data={data} id={i}/> );
 }
 
 interface ProjectileData {
+	active: boolean,
 	pos: THREE.Vector3,
 	targetPos: THREE.Vector3
 }
 
-function Projectile({data}) {
-
+function Projectile(props: {data: ProjectileData, id: number}) {
+	const setProjectileActive = useGameStore((state) => state.setProjectileActive);
 	const ref = useRef<RapierRigidBody>();
-	const originPos: THREE.Vector3 = useMemo(() => data.pos, []);
+	const originPos: THREE.Vector3 = useMemo(() => props.data.pos, []);
 
 	useEffect(() => {	
 		let direction: THREE.Vector3 = new THREE.Vector3(
-			data.targetPos.x - data.pos.x,
-			data.targetPos.y - data.pos.y,
-			data.targetPos.z - data.pos.z 
-		);
+			props.data.targetPos.x - props.data.pos.x,
+			props.data.targetPos.y - props.data.pos.y,
+			props.data.targetPos.z - props.data.pos.z 
+		).normalize();
 
 		ref.current?.setLinvel(
 			new THREE.Vector3(
-				direction.x * 2,
-				direction.y * 2,
-				direction.z * 2
+				direction.x * 20,
+				direction.y * 20,
+				direction.z * 20
 			),
 			false
 		);
 	}, []);
 
+	if (!props.data.active) { 
+		return (<></>); 
+	}
+
 	return ( 
 		<RigidBody 
 			mass={0.1} 
 			ref={ref}
-			collisionGroups={interactionGroups([CollissionGroup.projectile], [CollissionGroup.enemy, CollissionGroup.environment])}
+			colliders={false}
+			//collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
 			position={originPos}
 		>
+			<BallCollider 
+				sensor
+				args={[0.5]} 
+				collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
+				onIntersectionEnter={({ target, other }) => {
+					if (other.rigidBodyObject?.position) {
+						setProjectileActive(props.id, false);
+					}
+				}}
+			/>
 			<mesh
 				castShadow
 				receiveShadow

@@ -6,10 +6,15 @@ import {
 	MeshCollider,
 	RigidBody,
 	useRapier,
-  interactionGroups
+  interactionGroups,
+  CapsuleCollider
   } from "@react-three/rapier";
+import { CollissionGroup as CG } from './CollisionGroups';
 
 export default function SimpleModel(props) {
+
+  const capsuleHalfHeight = 0.4;
+  const capsuleRadius = 0.4;
 
   //mesh
   const groupRef = useRef<THREE.Group>()
@@ -49,11 +54,18 @@ export default function SimpleModel(props) {
       name="Target Practice Dummy"
       mass={10}
       ref={rigidbodyRef}
-      colliders="hull"
-      collisionGroups={interactionGroups([1], [0, 1, 2, 3])}
+      colliders={false}
+      position={props.customPosition}
   	>
-
-			<group ref={groupRef} {...props} dispose={null}>
+      <CapsuleCollider
+        name="target-dummy-character-capsule-collider"
+        args={[capsuleHalfHeight, capsuleRadius]}
+        collisionGroups={interactionGroups(
+          [CG.enemy], 
+          [CG.player, CG.enemy, CG.environment, CG.weaponSensor, CG.projectile]
+        )}
+      />
+			<group ref={groupRef} dispose={null} position={[0,-0.6,0]}>
         <mesh castShadow receiveShadow geometry={nodes.PrototypePete.geometry} material={meshToonMaterial} />
         <mesh  geometry={nodes.outline.geometry} material={outlineMaterial} />
 			</group>
