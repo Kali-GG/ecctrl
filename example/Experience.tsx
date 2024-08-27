@@ -99,7 +99,7 @@ export default function Experience() {
 
         {/* Flo: Enemies */}
         
-        <Enemies />
+
         <SimpleModel scale={0.8} customPosition={[8, 0, 0]}/>
 
         {/* Flo: Projectiles */}

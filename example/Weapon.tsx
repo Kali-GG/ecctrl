@@ -1,7 +1,7 @@
-import { CylinderCollider, interactionGroups } from "@react-three/rapier";
+import { BallCollider, CylinderCollider, interactionGroups, type CollisionTarget } from "@react-three/rapier";
 import {CollissionGroup} from "./CollisionGroups"
 import { useStoreProjectiles } from "./Store";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 
 export default function Weapon() {
@@ -9,10 +9,28 @@ export default function Weapon() {
 	const spawnProjectile = useStoreProjectiles((state) => state.spawn);
 	const [onCooldown, setOnCooldown] = useState(false);
 
-	const targets = []; //todo: onIntersectionEnter -> push into this. OnIntersetcionExit remove. Attack first one in the list
+	const targetRef = useRef([]);
+	const self = useRef<CollisionTarget>(null);
+
+	useEffect(() => { targetRef.current = []; }, []);
+
 	const swingTimer = 500; // milliseconds
 	const maxRange = 3.0;
 
+	const attack = () => {
+		if (targetRef.current.length == 0 || self.current == null || onCooldown) { return; }
+		setOnCooldown(true);
+		spawnProjectile({
+			active: true,
+			pos: self.current.rigidBodyObject.position, 
+			targetPos: targetRef.current[0].rigidBodyObject.position
+		});
+		setTimeout( () => { setOnCooldown(false); attack(); }, swingTimer );
+	}
+
+	const removeTarget = (other: CollisionTarget) => {
+		targetRef.current.splice(targetRef.current.findIndex(obj => obj.rigidBodyObject.uuid == other.rigidBodyObject.uuid), 1);
+	}
 
 	return(
 		<CylinderCollider 
@@ -24,19 +42,12 @@ export default function Weapon() {
 
 			collisionGroups={interactionGroups([CollissionGroup.weaponSensor], [CollissionGroup.enemy])}
 			onIntersectionEnter={({ target, other }) => {
-				//if (other.colliderObject) {console.log("Weapon test: ", target.colliderObject?.name," interacted with ",other.rigidBodyObject?.name);}
-				if (onCooldown) { return; } 
-				if (other.rigidBodyObject?.position) {
-					setOnCooldown(true);
-					spawnProjectile({
-						active: true,
-						pos: target.rigidBodyObject.position, 
-						targetPos: other.rigidBodyObject.position
-					});
-					setTimeout( () => { setOnCooldown(false); }, swingTimer );
-					//console.log(other)
-				}
+				if (!other.rigidBodyObject?.position) { return; }
+				targetRef.current.push(other); 
+				if (self.current == null) { self.current = target; }
+				if (onCooldown == false) { attack(); }
 			}}
+			onIntersectionExit={({ target, other }) => { removeTarget(other); }}
 		/>
 	);
 }

@@ -36,14 +36,12 @@ interface EnemyData {
 
 function Enemy(props: {data: EnemyData}) {
     const [active, setActive] = useState(true);
-    const [health, setHealth] = useState(props.data.initialHealth);
 	const ref = useRef<RapierRigidBody>();
 	const originPos: THREE.Vector3 = useMemo(() => props.data.pos, []);
+    const healthRef = useRef(null);
+    useEffect( () => {healthRef.current = props.data.initialHealth});
 
-	//let health: number;
-	//useEffect(() => { health = props.data.initialHealth; }, [])
-	//todo: check if we can avoid using state for health
-
+    //todo: this causes issues, as just removing the collider doesnt trigger a OnIntersectionExit event
     if (!active) { return(<></>); }
 
     return(
@@ -60,9 +58,10 @@ function Enemy(props: {data: EnemyData}) {
 				collisionGroups={interactionGroups([CG.enemy], [CG.player, CG.enemy, CG.environment, CG.projectile, CG.weaponSensor])}
 				onIntersectionEnter={({ target, other }) => {
 					if (other.colliderObject?.name == "projectile") {
-                        let newHealth = health -1;
-                        setHealth(newHealth);
-                        if (newHealth <= 0) { setActive(false); }                        
+                        healthRef.current = healthRef.current - 1;
+                        if (healthRef.current <= 0) { 
+                            setActive(false); 
+                        }                        
 					}
 				}}
 			/>

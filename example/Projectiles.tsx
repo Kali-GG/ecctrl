@@ -44,7 +44,7 @@ function Projectile(props: {data: ProjectileData, id: number}) {
 
 	return ( 
 		<RigidBody 
-			mass={0.1} 
+			mass={0.001} 
 			ref={ref}
 			colliders={false}
 			//collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
@@ -54,6 +54,7 @@ function Projectile(props: {data: ProjectileData, id: number}) {
 				sensor
 				name = "projectile"
 				args={[0.5]} 
+				mass={0}
 				collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
 				onIntersectionEnter={({ target, other }) => {
 					if (other.rigidBodyObject?.position) {
