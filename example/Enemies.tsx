@@ -40,9 +40,11 @@ function Enemy(props: {data: EnemyData}) {
 	const ref = useRef<RapierRigidBody>();
 	const originPos: THREE.Vector3 = useMemo(() => props.data.pos, []);
 
+	//let health: number;
+	//useEffect(() => { health = props.data.initialHealth; }, [])
+	//todo: check if we can avoid using state for health
+
     if (!active) { return(<></>); }
-
-
 
     return(
 		<RigidBody 
