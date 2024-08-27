@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { type ProjectileData } from './Projectiles';
 import { type EnemyData } from './Enemies';
+import * as THREE from "three";
 
 interface ProjectilesState {
 	list: ProjectileData[],
@@ -31,6 +32,9 @@ const useStoreEnemies = create<EnemiesState>() ((set, get) => ({
 		set( (state) => ({ list: [...state.list, data] }));
 	},
 }));
+
+
+
 
 
 export { useStoreProjectiles, useStoreEnemies }

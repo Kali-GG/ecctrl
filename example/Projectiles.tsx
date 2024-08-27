@@ -1,9 +1,8 @@
 import { BallCollider, interactionGroups, RapierRigidBody, RigidBody } from "@react-three/rapier";
 import { useStoreProjectiles } from "./Store"
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { CollissionGroup as CG } from "./CollisionGroups";
-
 
 export default function Projectiles() {
 	const projectiles = useStoreProjectiles((state) => state.list);
@@ -17,7 +16,7 @@ interface ProjectileData {
 }
 
 function Projectile(props: {data: ProjectileData, id: number}) {
-	const setProjectileActive = useStoreProjectiles((state) => state.setActive);
+	const [active, setActive] = useState(true);
 	const ref = useRef<RapierRigidBody>();
 	const originPos: THREE.Vector3 = useMemo(() => props.data.pos, []);
 
@@ -29,25 +28,18 @@ function Projectile(props: {data: ProjectileData, id: number}) {
 		).normalize();
 
 		ref.current?.setLinvel(
-			new THREE.Vector3(
-				direction.x * 20,
-				direction.y * 20,
-				direction.z * 20
-			),
+			direction.multiplyScalar(20),
 			false
 		);
+
+		setTimeout( () => { setActive(false) }, 3000 );
 	}, []);
 
-	if (!props.data.active) { 
-		return (<></>); 
-	}
-
 	return ( 
-		<RigidBody 
+		active ? <RigidBody 
 			mass={0.001} 
 			ref={ref}
 			colliders={false}
-			//collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
 			position={originPos}
 		>
 			<BallCollider
@@ -58,7 +50,7 @@ function Projectile(props: {data: ProjectileData, id: number}) {
 				collisionGroups={interactionGroups([CG.projectile], [CG.enemy, CG.environment])}
 				onIntersectionEnter={({ target, other }) => {
 					if (other.rigidBodyObject?.position) {
-						setProjectileActive(props.id, false);
+						setActive(false);
 					}
 				}}
 			/>
@@ -69,7 +61,7 @@ function Projectile(props: {data: ProjectileData, id: number}) {
 				<boxGeometry args={[0.5, 0.5, 0.5]} />
 				<meshStandardMaterial color="orange" />
 			</mesh>
-		</RigidBody>
+		</RigidBody> : null
 	)
 }
 

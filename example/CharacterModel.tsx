@@ -14,6 +14,7 @@ import { useFrame } from "@react-three/fiber";
 import type { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import Weapon from "./Weapon";
 
+
 export default function CharacterModel(props: CharacterModelProps) {
   // Change the character src to yours
   const group = useRef<THREE.Group>();
@@ -26,6 +27,7 @@ export default function CharacterModel(props: CharacterModelProps) {
   gradientMapTexture.minFilter = THREE.NearestFilter;
   gradientMapTexture.magFilter = THREE.NearestFilter;
   gradientMapTexture.generateMipmaps = false;
+
 
   /**
    * Prepare hands ref for attack action

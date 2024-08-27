@@ -22,6 +22,7 @@ import {
   type Vector,
 } from "@dimforge/rapier3d-compat";
 import React from "react";
+import { playerInfo } from "../example/playerInfo";
 
 export { EcctrlAnimation } from "./EcctrlAnimation";
 export { useFollowCam } from "./hooks/useFollowCam";
@@ -1007,6 +1008,7 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
   useFrame((state, delta) => {
     if (delta > 1) delta %= 1;
 
+
     // Character current position/velocity
     if (characterRef.current) {
       currentPos.copy(characterRef.current.translation() as THREE.Vector3);
@@ -1016,6 +1018,9 @@ const Ecctrl: ForwardRefRenderFunction<RapierRigidBody, EcctrlProps> = ({
       (characterRef.current.userData as userDataType).slopeAngle = slopeAngle;
       (characterRef.current.userData as userDataType).characterRotated = characterRotated;
       (characterRef.current.userData as userDataType).isOnMovingObject = isOnMovingObject;
+
+      // update playerInfo 
+      playerInfo.setPosition(currentPos);
     }
 
     /**

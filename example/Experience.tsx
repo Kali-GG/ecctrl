@@ -89,7 +89,6 @@ export default function Experience() {
             autoBalanceDampingOnY={0.05}
             disableFollowCam={disableFollowCam}
             camInitDis={-20}
-            //camTargetPos={{ x: 0, y: 5, z: -3 }}
             camInitDir={{ x: 0.7, y: 0}}
           >
             {/* Replace your model here */}
@@ -99,7 +98,7 @@ export default function Experience() {
 
         {/* Flo: Enemies */}
         
-
+        <Enemies />
         <SimpleModel scale={0.8} customPosition={[8, 0, 0]}/>
 
         {/* Flo: Projectiles */}
@@ -127,7 +126,7 @@ export default function Experience() {
         <Floor />
 
         {/* Shoting cubes */}
-        <ShotCube />
+        
       
       </Physics >
     </>
